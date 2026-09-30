@@ -21,14 +21,19 @@ VERSION = "1.0.0"
 MINIMUM_SYSTEM_VERSION = "15.0"
 
 
-def run(command: list[str]) -> str:
+def run(command: list[str]) -> None:
+    subprocess.run(command, check=True)
+
+
+def command_output(command: list[str]) -> str:
     completed = subprocess.run(command, check=True, text=True, stdout=subprocess.PIPE)
     return completed.stdout.strip()
 
 
 def build_app(configuration: str, output_directory: Path, signing_identity: str) -> Path:
+    run(["swift", "build", "--configuration", configuration])
     binary_directory = Path(
-        run(["swift", "build", "--configuration", configuration, "--show-bin-path"])
+        command_output(["swift", "build", "--configuration", configuration, "--show-bin-path"])
     )
     source_binary = binary_directory / EXECUTABLE_NAME
     if not source_binary.is_file():
