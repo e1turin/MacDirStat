@@ -37,8 +37,25 @@ Requires macOS 15.0+ and Swift 6.
 
 ```bash
 git clone https://github.com/phalladar/MacDirStat.git
-cd macdirstat
-swift build -c release
+cd MacDirStat
+python3 build-app.py
+open build/MacDirStat.app
+```
+
+This produces a release `build/MacDirStat.app` bundle that can be dragged into
+`/Applications`. The default ad-hoc signature is appropriate for local use.
+
+To distribute the app to other users, sign it with a Developer ID Application
+certificate and notarize the signed bundle with Apple before publishing it:
+
+```bash
+python3 build-app.py --sign "Developer ID Application: Your Name (TEAMID)"
+```
+
+For development from the command line, build and run the executable directly:
+
+```bash
+swift build
 swift run MacDirStat
 ```
 
