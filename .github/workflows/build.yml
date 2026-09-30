@@ -1,0 +1,32 @@
+name: Build macOS app
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build MacDirStat.app
+    runs-on: macos-15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Build app bundle
+        run: python3 build-app.py
+
+      - name: Archive app bundle
+        run: ditto -c -k --sequesterRsrc --keepParent build/MacDirStat.app build/MacDirStat-macos.zip
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: apps
+          path: build/MacDirStat-macos.zip
+          if-no-files-found: error
+
