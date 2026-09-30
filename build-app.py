@@ -19,6 +19,8 @@ EXECUTABLE_NAME = "MacDirStat"
 BUNDLE_IDENTIFIER = "com.phalladar.MacDirStat"
 VERSION = "1.0.0"
 MINIMUM_SYSTEM_VERSION = "15.0"
+APP_ICON_NAME = "AppIcon.icns"
+APP_ICON_SOURCE = PROJECT_ROOT / "Sources" / "MacDirStat" / APP_ICON_NAME
 
 
 def run(command: list[str]) -> None:
@@ -45,9 +47,15 @@ def build_app(configuration: str, output_directory: Path, signing_identity: str)
 
     contents_directory = app_directory / "Contents"
     macos_directory = contents_directory / "MacOS"
+    resources_directory = contents_directory / "Resources"
     macos_directory.mkdir(parents=True)
+    resources_directory.mkdir()
+
+    if not APP_ICON_SOURCE.is_file():
+        raise FileNotFoundError(f"missing application icon: {APP_ICON_SOURCE}")
 
     shutil.copy2(source_binary, macos_directory / EXECUTABLE_NAME)
+    shutil.copy2(APP_ICON_SOURCE, resources_directory / APP_ICON_NAME)
     (macos_directory / EXECUTABLE_NAME).chmod(0o755)
 
     info = {
@@ -55,6 +63,7 @@ def build_app(configuration: str, output_directory: Path, signing_identity: str)
         "CFBundleDisplayName": APP_NAME,
         "CFBundleExecutable": EXECUTABLE_NAME,
         "CFBundleIdentifier": BUNDLE_IDENTIFIER,
+        "CFBundleIconFile": APP_ICON_NAME,
         "CFBundleInfoDictionaryVersion": "6.0",
         "CFBundleName": APP_NAME,
         "CFBundlePackageType": "APPL",
